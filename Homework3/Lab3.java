@@ -26,6 +26,9 @@ public class Lab3{
 				numTrue++;
 			}
 		}
+		double ratio = numTrue / numTries;
+		System.out.println(ratio);
+
 	}
 
 	public static void main (String[] args) {
