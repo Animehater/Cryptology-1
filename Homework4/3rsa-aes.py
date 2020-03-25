@@ -100,28 +100,39 @@ def hyb_dec(sk,c):
     k = rsa_dec(sk,c1)
     m = aes_cbc_dec(k,c2)
     return m
-def cubic(x):
-    # I took idea here, https://studfile.net/preview/3802031/ (sorry,it's in Russia)
+def cubic_recur(x, x_left, x_right): # to big for python using recursive code
+
+    # I got tired trying python int, round func to work, so I used binary search (O(log n) speed is fine)
     # Here is the basic concept from wiki - https://en.wikipedia.org/wiki/Dichotomy
+    if (x_right >= x_left):
+        point = x_left + (x_right - x_left)/2
+        if x == (point**3):
+            return point
+        elif x > (point**3):
+            return cubic(x,point+1,x_right)
+        else:
+            return cubic(x,x_left,point-1)
+    else:
+        raise Exception('System failed to find cubic root')
+def cubic(x): #recursive way also didn't work well
     x_left = 0
     x_right = 2**512 # I tested, seems enough for search
     point = 0
-
     while (x_right - x_left) != 0:
         point = (x_right + x_left) // 2
         if x == (point**3):
             return point
         elif x > (point**3):
-            x_left = point - 1
+            x_left = point + 1
         elif x < (point**3):
-            x_right = point + 1
-
+            x_right = point - 1
 def adv(pk,c):
     (c1,c2) = c
     print (c1)
     print (" ")
     print (c2)
     #root = c1 ** 1/3 #----- didn't work
+    #root = cubic_recur(c1, 0, 2**256) #---also didn't work
     root = cubic(c1)
     print (root)
     m = aes_cbc_dec(root,c2)
